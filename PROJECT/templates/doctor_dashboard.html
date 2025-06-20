@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Dashboard - Hospital Management System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-user-md me-2"></i>Doctor Dashboard</h2>
+            <div class="user-info">
+                <span class="badge bg-primary">{{ doctor.doctorname }}</span>
+                <span class="badge bg-secondary">{{ doctor.dept }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Doctor Information Card -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Doctor Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Name:</strong> {{ doctor.doctorname }}</p>
+                        <p><strong>Email:</strong> {{ doctor.email }}</p>
+                        <p><strong>Department:</strong> {{ doctor.dept }}</p>
+                        <p><strong>Specialization:</strong> {{ doctor.specialization or 'Not specified' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Qualification:</strong> {{ doctor.qualification or 'Not specified' }}</p>
+                        <p><strong>Experience:</strong> {{ doctor.experience_years }} years</p>
+                        <p><strong>Consultation Fee:</strong> ৳{{ doctor.consultation_fee }}</p>
+                        <p><strong>Available Hours:</strong> {{ doctor.available_from.strftime('%H:%M') }} - {{ doctor.available_to.strftime('%H:%M') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ todays_appointments|length }}</h4>
+                        <p class="mb-0">Today's Appointments</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-calendar-day fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ all_appointments|selectattr('status', 'equalto', 'scheduled')|list|length }}</h4>
+                        <p class="mb-0">Scheduled</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ all_appointments|selectattr('status', 'equalto', 'completed')|list|length }}</h4>
+                        <p class="mb-0">Completed</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-check-double fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ all_appointments|selectattr('status', 'equalto', 'cancelled')|list|length }}</h4>
+                        <p class="mb-0">Cancelled</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-times-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Today's Appointments -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-calendar-day me-2"></i>Today's Appointments</h5>
+            </div>
+            <div class="card-body">
+                {% if todays_appointments %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Patient Name</th>
+                                    <th>Age</th>
+                                    <th>Gender</th>
+                                    <th>Disease</th>
+                                    <th>Contact</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in todays_appointments %}
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-primary">{{ appointment.appointment_time.strftime('%H:%M') }}</span>
+                                    </td>
+                                    <td>{{ appointment.name }}</td>
+                                    <td>{{ appointment.age or 'N/A' }}</td>
+                                    <td>{{ appointment.gender }}</td>
+                                    <td>{{ appointment.disease }}</td>
+                                    <td>{{ appointment.number }}</td>
+                                    <td>
+                                        {% if appointment.status == 'scheduled' %}
+                                            <span class="badge bg-success">Scheduled</span>
+                                        {% elif appointment.status == 'completed' %}
+                                            <span class="badge bg-info">Completed</span>
+                                        {% elif appointment.status == 'cancelled' %}
+                                            <span class="badge bg-danger">Cancelled</span>
+                                        {% elif appointment.status == 'no_show' %}
+                                            <span class="badge bg-warning">No Show</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="/edit/{{ appointment.pid }}" class="btn btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="/delete/{{ appointment.pid }}" class="btn btn-outline-danger" 
+                                               onclick="return confirm('Are you sure you want to delete this appointment?')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No appointments scheduled for today</h5>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- All Appointments -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>All Appointments</h5>
+            </div>
+            <div class="card-body">
+                {% if all_appointments %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Patient Name</th>
+                                    <th>Age</th>
+                                    <th>Gender</th>
+                                    <th>Disease</th>
+                                    <th>Contact</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in all_appointments %}
+                                <tr>
+                                    <td>{{ appointment.appointment_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ appointment.appointment_time.strftime('%H:%M') }}</span>
+                                    </td>
+                                    <td>{{ appointment.name }}</td>
+                                    <td>{{ appointment.age or 'N/A' }}</td>
+                                    <td>{{ appointment.gender }}</td>
+                                    <td>{{ appointment.disease }}</td>
+                                    <td>{{ appointment.number }}</td>
+                                    <td>
+                                        {% if appointment.status == 'scheduled' %}
+                                            <span class="badge bg-success">Scheduled</span>
+                                        {% elif appointment.status == 'completed' %}
+                                            <span class="badge bg-info">Completed</span>
+                                        {% elif appointment.status == 'cancelled' %}
+                                            <span class="badge bg-danger">Cancelled</span>
+                                        {% elif appointment.status == 'no_show' %}
+                                            <span class="badge bg-warning">No Show</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="/edit/{{ appointment.pid }}" class="btn btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="/delete/{{ appointment.pid }}" class="btn btn-outline-danger" 
+                                               onclick="return confirm('Are you sure you want to delete this appointment?')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No appointments found</h5>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Auto-refresh page every 5 minutes to show updated appointment status
+    setTimeout(function() {
+        location.reload();
+    }, 300000); // 5 minutes
+</script>
+{% endblock %}

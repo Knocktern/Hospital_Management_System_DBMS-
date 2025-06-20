@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Hospital Management System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="jumbotron bg-primary text-white p-5 rounded mb-4">
+            <h1 class="display-4">Welcome to Hospital Management System</h1>
+            <p class="lead">Efficient healthcare management for patients, doctors, and administrators.</p>
+            {% if not current_user.is_authenticated %}
+                <a class="btn btn-light btn-lg" href="/signup" role="button">Get Started</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if current_user.is_authenticated %}
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Welcome back, {{ current_user.username }}!</h2>
+            <p class="text-muted">You are logged in as: <strong>{{ current_user.user_type.title() }}</strong></p>
+        </div>
+    </div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-user-md fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">For Doctors</h5>
+                <p class="card-text">Manage your appointments, view patient records, and track your schedule efficiently.</p>
+                {% if current_user.is_authenticated and current_user.user_type == 'doctor' %}
+                    <a href="/doctor_dashboard" class="btn btn-primary">Go to Dashboard</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-3x text-success mb-3"></i>
+                <h5 class="card-title">For Patients</h5>
+                <p class="card-text">Book appointments, view your medical history, and manage your healthcare needs.</p>
+                {% if current_user.is_authenticated and current_user.user_type == 'patient' %}
+                    <a href="/patient_dashboard" class="btn btn-success">Go to Dashboard</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-cogs fa-3x text-warning mb-3"></i>
+                <h5 class="card-title">For Managers</h5>
+                <p class="card-text">Oversee hospital operations, manage staff, and coordinate patient care.</p>
+                {% if current_user.is_authenticated and current_user.user_type == 'manager' %}
+                    <a href="/doctors" class="btn btn-warning">Manage System</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if current_user.is_authenticated and current_user.user_type == 'manager' %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h3>Quick Actions</h3>
+        <div class="row">
+            <div class="col-md-3">
+                <a href="/doctors" class="btn btn-outline-primary btn-block w-100 mb-2">
+                    <i class="fas fa-user-md me-2"></i>Add Doctor
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="/patients" class="btn btn-outline-success btn-block w-100 mb-2">
+                    <i class="fas fa-calendar-plus me-2"></i>Book Appointment
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="/bookings" class="btn btn-outline-info btn-block w-100 mb-2">
+                    <i class="fas fa-list me-2"></i>View Bookings
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="/manage_requests" class="btn btn-outline-warning btn-block w-100 mb-2">
+                    <i class="fas fa-clipboard-check me-2"></i>Manage Requests
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Search Form -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-search me-2"></i>Search for a Doctor</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/search">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" name="search" placeholder="Enter doctor name..." required>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search me-2"></i>Search
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle me-2"></i>System Features</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Online Appointment Booking</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Doctor Schedule Management</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Patient Records Management</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Real-time Availability Check</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Multi-user Role Management</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Appointment Request System</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Conflict Prevention</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Secure Authentication</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

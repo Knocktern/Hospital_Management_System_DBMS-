@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Add Doctor - Hospital Management System{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-md me-2"></i>Add New Doctor
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="/doctors">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                                <div class="form-text">Must match a registered doctor user account</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="doctorname" class="form-label">Doctor Name *</label>
+                                <input type="text" class="form-control" id="doctorname" name="doctorname" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="dept" class="form-label">Department *</label>
+                                <select class="form-select" id="dept" name="dept" required>
+                                    <option value="">Select Department</option>
+                                    <option value="Cardiology">Cardiology</option>
+                                    <option value="Dermatology">Dermatology</option>
+                                    <option value="Emergency Medicine">Emergency Medicine</option>
+                                    <option value="Endocrinology">Endocrinology</option>
+                                    <option value="Gastroenterology">Gastroenterology</option>
+                                    <option value="General Surgery">General Surgery</option>
+                                    <option value="Gynecology">Gynecology</option>
+                                    <option value="Internal Medicine">Internal Medicine</option>
+                                    <option value="Neurology">Neurology</option>
+                                    <option value="Oncology">Oncology</option>
+                                    <option value="Orthopedics">Orthopedics</option>
+                                    <option value="Pediatrics">Pediatrics</option>
+                                    <option value="Psychiatry">Psychiatry</option>
+                                    <option value="Radiology">Radiology</option>
+                                    <option value="Urology">Urology</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="specialization" class="form-label">Specialization</label>
+                                <input type="text" class="form-control" id="specialization" name="specialization">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="qualification" class="form-label">Qualification</label>
+                            <input type="text" class="form-control" id="qualification" name="qualification" placeholder="e.g., MBBS, MD, MS">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="experience_years" class="form-label">Experience (Years)</label>
+                                <input type="number" class="form-control" id="experience_years" name="experience_years" min="0" max="50" value="0">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="consultation_fee" class="form-label">Consultation Fee</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input type="number" class="form-control" id="consultation_fee" name="consultation_fee" step="0.01" min="0" value="500.00">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="available_from" class="form-label">Available From</label>
+                                <input type="time" class="form-control" id="available_from" name="available_from" value="09:00">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="available_to" class="form-label">Available To</label>
+                                <input type="time" class="form-control" id="available_to" name="available_to" value="17:00">
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="reset" class="btn btn-secondary me-md-2">Reset</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Add Doctor
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Form validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const availableFrom = document.getElementById('available_from');
+    const availableTo = document.getElementById('available_to');
+    
+    // Validate time range
+    function validateTimeRange() {
+        if (availableFrom.value && availableTo.value) {
+            if (availableFrom.value >= availableTo.value) {
+                availableTo.setCustomValidity('End time must be after start time');
+            } else {
+                availableTo.setCustomValidity('');
+            }
+        }
+    }
+    
+    availableFrom.addEventListener('change', validateTimeRange);
+    availableTo.addEventListener('change', validateTimeRange);
+    
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+        validateTimeRange();
+        if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Trigger Logs{% endblock %}
+{% block content %}
+<h2 class="mb-4">Action Logs</h2>
+
+{% if posts %}
+<table class="table table-striped">
+    <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Name</th>
+            <th>Action</th>
+            <th>Details</th>
+            <th>Timestamp</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for post in posts %}
+        <tr>
+            <td>{{ post.tid }}</td>
+            <td>{{ post.email }}</td>
+            <td>{{ post.name }}</td>
+            <td>{{ post.action }}</td>
+            <td>{{ post.details }}</td>
+            <td>{{ post.timestamp }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No logs available.</p>
+{% endif %}
+{% endblock %}

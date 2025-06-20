@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Manage Appointment Requests{% endblock %}
+{% block content %}
+<h2 class="mb-4">Pending Appointment Requests</h2>
+
+{% if requests %}
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Patient Name</th>
+                <th>Email</th>
+                <th>Doctor</th>
+                <th>Department</th>
+                <th>Preferred Date</th>
+                <th>Preferred Time</th>
+                <th>Disease</th>
+                <th>Message</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in requests %}
+            <tr>
+                <td>{{ r.patient_name }}</td>
+                <td>{{ r.patient_email }}</td>
+                <td>{{ r.doctorname }}</td>
+                <td>{{ r.dept }}</td>
+                <td>{{ r.AppointmentRequests.preferred_date }}</td>
+                <td>{{ r.AppointmentRequests.preferred_time.strftime('%H:%M') }}</td>
+                <td>{{ r.AppointmentRequests.disease }}</td>
+                <td>{{ r.AppointmentRequests.message }}</td>
+                <td>
+                    <a href="/approve_request/{{ r.AppointmentRequests.request_id }}" class="btn btn-success btn-sm">Approve</a>
+                    <a href="/reject_request/{{ r.AppointmentRequests.request_id }}" class="btn btn-danger btn-sm">Reject</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No pending appointment requests.</p>
+{% endif %}
+{% endblock %}

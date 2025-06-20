@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Booking - Hospital Management System{% endblock %}
+
+{% block content %}
+<h2>Patient Appointment Booking</h2>
+
+<!-- Debug Information -->
+<div class="debug-info bg-light border rounded p-3 mb-3">
+    <h5>Debug Information:</h5>
+    <p><strong>Current User:</strong> {{ current_user.username if current_user.is_authenticated else 'Not logged in' }}</p>
+    <p><strong>User Type:</strong> {{ current_user.user_type if current_user.is_authenticated else 'N/A' }}</p>
+    <p><strong>Number of Doctors:</strong> {{ doctors|length if doctors else 0 }}</p>
+</div>
+
+<!-- Main Form -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-calendar-plus me-2"></i>Book New Appointment</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/patients">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">
+                                    <i class="fas fa-user me-1"></i>Patient Name
+                                </label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">
+                                    <i class="fas fa-envelope me-1"></i>Email
+                                </label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="gender" class="form-label">
+                                    <i class="fas fa-venus-mars me-1"></i>Gender
+                                </label>
+                                <select class="form-control" id="gender" name="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="age" class="form-label">
+                                    <i class="fas fa-birthday-cake me-1"></i>Age
+                                </label>
+                                <input type="number" class="form-control" id="age" name="age" min="1" max="120">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="number" class="form-label">
+                                    <i class="fas fa-phone me-1"></i>Phone Number
+                                </label>
+                                <input type="tel" class="form-control" id="number" name="number" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="disease" class="form-label">
+                                    <i class="fas fa-stethoscope me-1"></i>Chief Complaint
+                                </label>
+                                <input type="text" class="form-control" id="disease" name="disease" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="doctor_id" class="form-label">
+                                    <i class="fas fa-user-md me-1"></i>Select Doctor
+                                </label>
+                                <select class="form-control" id="doctor_id" name="doctor_id" required>
+                                    <option value="">Choose a doctor...</option>
+                                    {% if doctors %}
+                                        {% for doctor in doctors %}
+                                            <option value="{{ doctor.did }}" data-dept="{{ doctor.dept }}">
+                                                Dr. {{ doctor.doctorname }} - {{ doctor.dept }}
+                                                {% if doctor.specialization %}({{ doctor.specialization }}){% endif %}
+                                            </option>
+                                        {% endfor %}
+                                    {% else %}
+                                        <option value="" disabled>No doctors available</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="dept" class="form-label">
+                                    <i class="fas fa-hospital me-1"></i>Department
+                                </label>
+                                <input type="text" class="form-control" id="dept" name="dept" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="appointment_date" class="form-label">
+                                    <i class="fas fa-calendar me-1"></i>Appointment Date
+                                </label>
+                                <input type="date" class="form-control" id="appointment_date" name="appointment_date" 
+                                       min="{{ today }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="appointment_time" class="form-label">
+                                    <i class="fas fa-clock me-1"></i>Appointment Time
+                                </label>
+                                <select class="form-control" id="appointment_time" name="appointment_time" required>
+                                    <option value="">Select date and doctor first</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check me-1"></i>Book Appointment
+                        </button>
+                        <a href="/" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-user-md me-2"></i>Available Doctors</h5>
+            </div>
+            <div class="card-body">
+                {% if doctors %}
+                    {% for doctor in doctors %}
+                        <div class="mb-3 p-3 border rounded bg-light">
+                            <h6 class="text-primary">
+                                <i class="fas fa-user-md me-1"></i>Dr. {{ doctor.doctorname }}
+                            </h6>
+                            <p class="mb-1">
+                                <i class="fas fa-hospital me-1 text-muted"></i>
+                                <strong>Department:</strong> {{ doctor.dept }}
+                            </p>
+                            {% if doctor.specialization %}
+                                <p class="mb-1">
+                                    <i class="fas fa-star me-1 text-muted"></i>
+                                    <strong>Specialization:</strong> {{ doctor.specialization }}
+                                </p>
+                            {% endif %}
+                            <p class="mb-1">
+                                <i class="fas fa-graduation-cap me-1 text-muted"></i>
+                                <strong>Experience:</strong> {{ doctor.experience_years }} years
+                            </p>
+                            <p class="mb-1">
+                                <i class="fas fa-rupee-sign me-1 text-muted"></i>
+                                <strong>Fee:</strong> ₹{{ doctor.consultation_fee }}
+                            </p>
+                            <p class="mb-0">
+                                <i class="fas fa-clock me-1 text-muted"></i>
+                                <strong>Available:</strong> {{ doctor.available_from.strftime('%H:%M') }} - {{ doctor.available_to.strftime('%H:%M') }}
+                            </p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted">
+                        <i class="fas fa-exclamation-circle fa-3x mb-3"></i>
+                        <p>No doctors available. Please add doctors first.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Auto-fill department when doctor is selected
+    document.getElementById('doctor_id').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const dept = selectedOption.getAttribute('data-dept');
+        document.getElementById('dept').value = dept || '';
+        
+        // Reset time slots when doctor changes
+        const timeSelect = document.getElementById('appointment_time');
+        timeSelect.innerHTML = '<option value="">Select date first</option>';
+        
+        // Load available slots if date is already selected
+        const dateInput = document.getElementById('appointment_date');
+        if (dateInput.value && this.value) {
+            loadTimeSlots();
+        }
+    });
+
+    // Load available time slots when date changes
+    document.getElementById('appointment_date').addEventListener('change', function() {
+        const doctorId = document.getElementById('doctor_id').value;
+        if (doctorId && this.value) {
+            loadTimeSlots();
+        }
+    });
+
+    function loadTimeSlots() {
+        const doctorId = document.getElementById('doctor_id').value;
+        const date = document.getElementById('appointment_date').value;
+        const timeSelect = document.getElementById('appointment_time');
+        
+        if (!doctorId || !date) return;
+        
+        // Show loading
+        timeSelect.innerHTML = '<option value="">Loading...</option>';
+        
+        // Make AJAX request to get available slots
+        fetch('/check_availability', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                doctor_id: doctorId,
+                date: date
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            timeSelect.innerHTML = '<option value="">Select time...</option>';
+            
+            if (data.available_slots && data.available_slots.length > 0) {
+                data.available_slots.forEach(slot => {
+                    const option = document.createElement('option');
+                    option.value = slot;
+                    option.textContent = slot;
+                    timeSelect.appendChild(option);
+                });
+            } else {
+                timeSelect.innerHTML = '<option value="">No slots available</option>';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading time slots:', error);
+            timeSelect.innerHTML = '<option value="">Error loading slots</option>';
+        });
+    }
+
+    // Set minimum date to today
+    document.getElementById('appointment_date').min = new Date().toISOString().split('T')[0];
+</script>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Patient Dashboard{% endblock %}
+{% block content %}
+<h2 class="mb-4">Your Appointments</h2>
+
+{% if appointments %}
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Doctor</th>
+            <th>Department</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for a in appointments %}
+        <tr>
+            <td>{{ a.appointment_date }}</td>
+            <td>{{ a.appointment_time.strftime('%H:%M') }}</td>
+            <td>{{ a.doctor_id }}</td>
+            <td>{{ a.dept }}</td>
+            <td>{{ a.status }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No appointments found.</p>
+{% endif %}
+
+<hr>
+
+<h3 class="mt-5">Request New Appointment</h3>
+<form action="/request_appointment" method="POST" class="mt-3">
+    <div class="row">
+        <div class="col-md-4">
+            <label>Doctor</label>
+            <select name="doctor_id" class="form-select" required>
+                <option value="">Select Doctor</option>
+                {% for doc in doctors %}
+                    <option value="{{ doc.did }}">{{ doc.doctorname }} - {{ doc.dept }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label>Preferred Date</label>
+            <input type="date" name="preferred_date" class="form-control" required>
+        </div>
+        <div class="col-md-4">
+            <label>Preferred Time</label>
+            <input type="time" name="preferred_time" class="form-control" required>
+        </div>
+    </div>
+    <div class="mt-3">
+        <label>Disease/Concern</label>
+        <input type="text" name="disease" class="form-control" required>
+    </div>
+    <div class="mt-3">
+        <label>Message</label>
+        <textarea name="message" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Request Appointment</button>
+</form>
+
+<hr>
+
+<h3 class="mt-5">Pending Requests</h3>
+{% if requests %}
+<table class="table table-sm table-striped mt-3">
+    <thead class="table-light">
+        <tr>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Disease</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in requests %}
+        <tr>
+            <td>{{ r.doctor_id }}</td>
+            <td>{{ r.preferred_date }}</td>
+            <td>{{ r.preferred_time.strftime('%H:%M') }}</td>
+            <td>{{ r.disease }}</td>
+            <td>{{ r.status }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No pending requests.</p>
+{% endif %}
+{% endblock %}

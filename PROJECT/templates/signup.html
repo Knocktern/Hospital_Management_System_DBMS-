@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - Hospital Management System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header text-center">
+                <h4><i class="fas fa-user-plus me-2"></i>Create Your Account</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">
+                                    <i class="fas fa-user me-2"></i>Full Name *
+                                </label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">
+                                    <i class="fas fa-envelope me-2"></i>Email Address *
+                                </label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="password" class="form-label">
+                                    <i class="fas fa-lock me-2"></i>Password *
+                                </label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">
+                                    <i class="fas fa-phone me-2"></i>Phone Number
+                                </label>
+                                <input type="tel" class="form-control" id="phone" name="phone">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="user_type" class="form-label">
+                            <i class="fas fa-user-tag me-2"></i>Account Type *
+                        </label>
+                        <select class="form-select" id="user_type" name="user_type" required>
+                            <option value="">Select your role...</option>
+                            <option value="patient">Patient - Book appointments and manage health records</option>
+                            <option value="doctor">Doctor - Manage appointments and patient consultations</option>
+                            <option value="manager">Manager - Full system administration access</option>
+                        </select>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Note:</strong> If you're signing up as a doctor, a manager will need to add your professional details separately.
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-user-plus me-2"></i>Create Account
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <p class="mb-0">Already have an account? <a href="/login">Login here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-question-circle me-2"></i>Which Account Type Should I Choose?</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="border rounded p-3 h-100">
+                            <div class="text-center">
+                                <i class="fas fa-user fa-3x text-info mb-3"></i>
+                                <h6>Patient Account</h6>
+                            </div>
+                            <ul class="list-unstyled small">
+                                <li><i class="fas fa-check text-success me-2"></i>Request appointments</li>
+                                <li><i class="fas fa-check text-success me-2"></i>View your bookings</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Manage health records</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Track appointment history</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="border rounded p-3 h-100">
+                            <div class="text-center">
+                                <i class="fas fa-user-md fa-3x text-success mb-3"></i>
+                                <h6>Doctor Account</h6>
+                            </div>
+                            <ul class="list-unstyled small">
+                                <li><i class="fas fa-check text-success me-2"></i>View your appointments</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Manage patient consultations</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Access patient records</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Update appointment status</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="border rounded p-3 h-100">
+                            <div class="text-center">
+                                <i class="fas fa-user-shield fa-3x text-primary mb-3"></i>
+                                <h6>Manager Account</h6>
+                            </div>
+                            <ul class="list-unstyled small">
+                                <li><i class="fas fa-check text-success me-2"></i>Add new doctors</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Book appointments for patients</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Approve/reject requests</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Full system access</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Add some client-side validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const userType = document.getElementById('user_type').value;
+        if (!userType) {
+            e.preventDefault();
+            alert('Please select an account type.');
+            return false;
+        }
+        
+        const password = document.getElementById('password').value;
+        if (password.length < 6) {
+            e.preventDefault();
+            alert('Password must be at least 6 characters long.');
+            return false;
+        }
+    });
+</script>
+{% endblock %}
